@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+   <link rel="stylesheet" href="{{ url_for('static', filename='images/NetInfinte.png') }}">
+
+    <title>NetInfinite Music Player</title>
+    <style>
+    
+    /* General Styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa; /* White background */
+        color: black; /* Text color black */
+        overflow-x: hidden;
+        width: 100%;
+        padding-top: 70px; /* Adjust padding for header */
+    }
+
+    /* Header with Logo */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #d3d3d3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        height: 70px;
+        border-bottom: 1px solid #black;
+    }
+
+    .header img {
+        width: 120px; /* Logo size */
+        max-height: 50px;
+    }
+
+    .menu-icon {
+    position: absolute; /* Ensure it's positioned relative to the page */
+    top: 15px; /* Adjust the vertical distance from the top */
+    left: 20px; /* Adjust the horizontal distance from the left */
+    font-size: 30px; /* Size of the menu icon */
+    cursor: pointer; /* Make it clickable */
+    color: pink; /* Icon color */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+    .menu-icon:hover {
+        color: #666;
+        transform: scale(1.1);
+    }
+
+    /* Menu Drawer */
+    #menu {
+        display: none;
+        position: absolute;
+        top: 60px;
+        left: 20px;
+        background-color: white;
+        padding: 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+    }
+
+    #menu a {
+        color: black;
+        text-decoration: none;
+        display: block;
+        padding: 8px 0;
+    }
+
+    #menu a:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Search Box */
+    .search-box {
+        width: 80%;
+        margin: 120px auto 20px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        color: black;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .search-box:focus {
+        outline: none;
+        border: 1px solid #ccc;
+    }
+
+    /* Song List */
+    #song-list {
+        width: 100%;
+        margin: 15px auto;
+        padding: 0;
+        list-style: none;
+        max-height: 100vh;
+    }
+
+    .song-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .song-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Song Image */
+    .song-image {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+
+ 
+    .song-info {
+    flex-grow: 1; /* Allow the song info to take up available space */
+    font-size: 12px; /* Set the font size */
+    color: black; /* Text color */
+    word-wrap: break-word; /* Force wrapping on long words */
+    overflow-wrap: break-word; /* Break lines on long words */
+    white-space: normal; /* Allow wrapping to the next line */
+ }
+
+    /* Song Actions */
+    .song-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .play-btn, .download-btn {
+        background-color: #f0f0f0;
+        color: black;
+        border: none;
+        padding: 8px 12px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+      text-decoration: none; /* Remove underline */
+}
+    
+
+    .play-btn:hover, .download-btn:hover {
+        background-color: #ddd;
+        transform: scale(1.05);
+    }
+
+    /* Footer */
+    footer {
+        background-color: #d3d3d3;
+        color: black;
+        width: 100%;
+        text-align: center;
+        padding: 15px 0;
+        border-top: 1px solid #ddd;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+    }
+</style>
+    </style>
+</head>
+<body>
+
+    <!-- Header with Logo -->
+    <div class="header">
+        <img src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+    </div>
+    
+    <!-- Menu Icon -->
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+    <!-- Menu Drawer -->
+    <div id="menu">
+        <a href="/about.html">About Us</a>
+        <a href="/contact.html">Contact</a>
+        <a href="/help.html">Help</a>
+        <a href="/privacy-policy.html">Privacy Policy</a>
+        <a href="/services.html">Services</a>
+    </div>
+
+    <!-- Search Box -->
+    <input type="text" class="search-box" id="search-box" placeholder="Search for a song or artist..." onkeyup="searchSongs()">
+
+    <!-- Song List -->
+    <ul id="song-list"></ul>
+
+    <!-- Footer with Logo -->
+    <footer>
+        <img src="images/NetInfinte.png" alt="Logo" width="50">
+        <p>&copy; 2024 NetInfinite. All rights reserved.</p>
+    </footer>
+
+    <script>
+        let searchBox = document.getElementById('search-box');
+        let songList = document.getElementById('song-list');
+        let currentAudio = null; // Store the current audio instance
+
+        // Fetch Songs from API and Display them
+        async function searchSongs() {
+            const query = searchBox.value.toLowerCase();
+            const response = await fetch('http://127.0.0.1:5000/api/songs');
+            const songs = await response.json();
+
+            songList.innerHTML = '';
+
+            if (songs.error) {
+                songList.innerHTML = `<li>${songs.error}</li>`;
+                return;
+            }
+
+            songs.filter(song => song.name.toLowerCase().includes(query))
+                .forEach(song => {
+                    const songItem = document.createElement('li');
+                    songItem.className = 'song-item';
+                    songItem.innerHTML = `
+                        <img class="song-image" src="${song.image || '/images/NetInfinte.png'}" alt="${song.name}">
+                        <div class="song-info">${song.name}</div>
+                        <div class="song-actions">
+                            <button class="play-btn" onclick="playPauseSong('${song.name}', this)">Play</button>
+                            <a class="download-btn" href="http://127.0.0.1:5000/static/songs/${song.name}" download>Download</a>
+                        </div>
+                    `;
+                    songList.appendChild(songItem);
+                });
+        }
+
+        // Play/Pause Song Functionality
+        function playPauseSong(songName, button) {
+            if (currentAudio && currentAudio.src === `http://127.0.0.1:5000/static/songs/${songName}`) {
+                if (currentAudio.paused) {
+                    currentAudio.play();
+                    button.textContent = 'Pause';
+                    button.classList.add('playing');
+                } else {
+                    currentAudio.pause();
+                    button.textContent = 'Play';
+                    button.classList.remove('playing');
+                }
+            } else {
+                if (currentAudio) {
+                    currentAudio.pause();
+                    let previousButton = document.querySelector('.song-item button.play-btn.playing');
+                    if (previousButton) {
+                        previousButton.textContent = 'Play';
+                        previousButton.classList.remove('playing');
+                    }
+                }
+                currentAudio = new Audio(`http://127.0.0.1:5000/static/songs/${songName}`);
+                currentAudio.play();
+                button.textContent = 'Pause';
+                button.classList.add('playing');
+            }
+        }
+
+        // Toggle Menu Drawer
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Fetch Songs on Initial Load
+        searchSongs();
+    </script>
+
+</body>
+</html>

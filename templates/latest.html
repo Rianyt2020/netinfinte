@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+    <title>Radom</title>
+    <style>
+        /* General Styles (Similar to NetInfinite Music Player) */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+            color: black;
+            overflow-x: hidden;
+            padding-top: 70px;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background-color: #d3d3d3;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            height: 70px;
+            border-bottom: 1px solid #black;
+        }
+
+        .header img {
+            width: 120px;
+            max-height: 50px;
+        }
+
+        .menu-icon {
+            position: absolute;
+            top: 15px;
+            left: 20px;
+            font-size: 30px;
+            cursor: pointer;
+            color: pink;
+            z-index: 1000;
+        }
+
+        .menu-icon:hover {
+            color: #666;
+            transform: scale(1.1);
+        }
+
+        #menu {
+            display: none;
+            position: absolute;
+            top: 60px;
+            left: 20px;
+            background-color: white;
+            padding: 10px;
+            border: 1px solid #ddd;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        #menu a {
+            color: black;
+            text-decoration: none;
+            display: block;
+            padding: 8px 0;
+        }
+
+        #menu a:hover {
+            background-color: #f0f0f0;
+        }
+
+        .songs-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 20px;
+        }
+
+        .song-card {
+            background-color: white;
+            padding: 15px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .song-card:hover {
+            transform: scale(1.02);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .song-card img {
+            width: 100%;
+            border-radius: 8px;
+        }
+
+        .song-card h3 {
+            margin-top: 10px;
+            font-size: 18px;
+            color: black;
+        }
+
+        .song-card p {
+            font-size: 14px;
+            color: #777;
+        }
+
+        .song-card a {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .song-card a:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            background-color: #d3d3d3;
+            color: #f0f0f0;
+            width: 100%;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+        }
+
+        .footer-logo {
+            max-width: 100px;
+            height: auto;
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header with Logo -->
+    <div class="header">
+        <img src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+    </div>
+
+    <!-- Menu Icon -->
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+
+    <!-- Menu Drawer -->
+    <div id="menu">
+        <a href="{{ url_for('videos_page') }}">Top Videos</a>
+        <a href="{{ url_for('latest_page') }}">Latest</a>
+        <a href="{{ url_for('about_page') }}">About Us</a>
+        <a href="{{ url_for('contact_page') }}">Contact</a>
+        <a href="{{ url_for('help_page') }}">Help</a>
+        <a href="{{ url_for('privacy_policy_page') }}">Privacy Policy</a>
+        <a href="{{ url_for('services_page') }}">Services</a>
+        <a href="{{ url_for('premium_page') }}">Premium</a>
+    </div>
+
+    <!-- Premium Songs -->
+    <h1>Latest</h1>
+    <div class="songs-list">
+        <!-- Songs will be injected here using JavaScript -->
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <img class="footer-logo" src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+        <p>&copy; 2024 NetInfinite. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // Fetch and display premium songs
+        fetch('/api/premium_songs')
+            .then(response => response.json())
+            .then(songs => {
+                const songsList = document.querySelector('.songs-list');
+                songs.forEach(song => {
+                    const songCard = document.createElement('div');
+                    songCard.classList.add('song-card');
+
+                    songCard.innerHTML = `
+                        <img src="${song.image}" alt="${song.title}">
+                        <h3>${song.title}</h3>
+                        <p>By ${song.artist}</p>
+                        <a href="/static/permusic/${song.name}" target="_blank">Download</a>
+                    `;
+                    songsList.appendChild(songCard);
+                });
+            })
+            .catch(error => console.log('Error loading songs:', error));
+
+        // Toggle Menu
+        function toggleMenu() {
+            const menu = document.getElementById('menu');
+            menu.style.display = menu.style.display === 'block' ? 'none' : 'block';
+        }
+    </script>
+</body>
+</html>

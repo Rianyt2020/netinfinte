@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Chatbot</title>
+    <style>
+        /* CSS: Style the entire page */
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        /* CSS: Style the chatbot container */
+        .chat-container {
+            width: 100%;
+            max-width: 500px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* CSS: Style the chat box */
+        .chat-box {
+            height: 400px;
+            overflow-y: scroll;
+            padding: 15px;
+            border-bottom: 1px solid #ddd;
+            background-color: #fafafa;
+        }
+
+        /* CSS: Style the input container */
+        .input-container {
+            display: flex;
+            padding: 10px;
+            background-color: #fff;
+            border-top: 1px solid #ddd;
+        }
+
+        #user-input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-left: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        /* CSS: Style messages */
+        .message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 10px;
+            max-width: 80%;
+        }
+
+        .user-message {
+            background-color: #d1ecf1;
+            align-self: flex-end;
+        }
+
+        .ai-message {
+            background-color: #f8d7da;
+            align-self: flex-start;
+        }
+    </style>
+</head>
+<body>
+
+<div class="chat-container">
+    <div class="chat-box" id="chat-box"></div>
+    <div class="input-container">
+        <input type="text" id="user-input" placeholder="Type a message...">
+        <button onclick="sendMessage()">Send</button>
+    </div>
+</div>
+
+<script>
+    // JavaScript: Function to display messages in the chat box
+    function displayMessage(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', sender === 'user' ? 'user-message' : 'ai-message');
+        messageElement.textContent = message;
+        document.getElementById('chat-box').appendChild(messageElement);
+        document.getElementById('chat-box').scrollTop = document.getElementById('chat-box').scrollHeight; // Scroll to latest message
+    }
+
+    // JavaScript: Function to handle sending the message
+    async function sendMessage() {
+        const userMessage = document.getElementById('user-input').value.trim();
+        if (userMessage !== "") {
+            // Display user message in the chat
+            displayMessage(userMessage, 'user');
+            
+            // Clear the input field
+            document.getElementById('user-input').value = "";
+
+            try {
+                // Call OpenAI API for the response
+                const response = await getOpenAIResponse(userMessage);
+                displayMessage(response, 'ai');
+            } catch (error) {
+                displayMessage("Sorry, I couldn't process that. Please try again.", "ai");
+            }
+        }
+    }
+
+    // JavaScript: Function to send user message to OpenAI and get the response
+    async function getOpenAIResponse(userMessage) {
+        const apiKey = 'your-openai-api-key';  // Replace with your OpenAI API key
+        const endpoint = 'https://api.openai.com/v1/completions';
+        
+        const requestData = {
+            model: 'text-davinci-003',  // GPT model version
+            prompt: userMessage,
+            max_tokens: 150,
+            temperature: 0.7,
+            n: 1,
+            stop: null,
+        };
+
+        const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`,
+            },
+            body: JSON.stringify(requestData),
+        });
+
+        const data = await response.json();
+        return data.choices[0].text.trim();  // Return AI response
+    }
+</script>
+
+</body>
+</html>

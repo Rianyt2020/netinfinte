@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - NetInfinte</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #808080; /* Grey color for the text */
+        }
+
+        h1, h2 {
+            color: #505050; /* Slightly darker grey for headings */
+        }
+
+        .content {
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .footer {
+            background-color: #505050;
+            color: #f0f0f0;
+            text-align: center;
+            padding: 15px 0;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .footer p {
+            margin: 0;
+        }
+
+        .bold-text {
+            font-weight: bold;
+        }
+
+        .mission {
+            background-color: #e8e8e8;
+            padding: 20px;
+            border-radius: 5px;
+        }
+
+        .team {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+        }
+
+        .team-member {
+            width: 200px;
+            margin: 10px;
+            text-align: center;
+        }
+
+        .team-member img {
+            width: 100%;
+            border-radius: 50%;
+        }
+
+        .team-member h3 {
+            color: #505050;
+        }
+
+        a {
+            color: #505050;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="content">
+        <h1>About NetInfinte</h1>
+        
+        <div class="section">
+            <h2>Who We Are</h2>
+            <p>NetInfinte is a leading platform for music lovers and creators around the world. Our mission is to provide high-quality music streaming, offering a vast library of songs, from the latest hits to timeless classics. We focus on giving users an unparalleled experience, with the ability to explore, discover, and enjoy music without limits.</p>
+        </div>
+
+        <div class="section">
+            <h2>Our Mission</h2>
+            <p class="mission">At NetInfinte, we are committed to transforming the music industry by making music accessible to everyone. Whether you're an artist looking to showcase your talent or a fan searching for new sounds, NetInfinte is here to bring you closer to the music you love. We are continually evolving, adding more features, more music, and more ways to interact with the community.</p>
+        </div>
+
+        <div class="section">
+            <h2>Our Services</h2>
+            <ul>
+                <li><span class="bold-text">Music Streaming:</span> Access a diverse collection of music, from local talents to global stars.</li>
+                <li><span class="bold-text">Music Downloads:</span> Download your favorite tracks to listen offline.</li>
+                <li><span class="bold-text">Playlists:</span> Curate your own playlists or explore ones curated by others.</li>
+                <li><span class="bold-text">Discover New Artists:</span> Discover and support emerging artists from all over the world.</li>
+                <li><span class="bold-text">Premium Packages:</span> Get exclusive features and music with our upcoming premium packages.</li>
+            </ul>
+        </div>
+
+        <div class="section">
+            <h2>Our Team</h2>
+            <p>Behind NetInfinte is a passionate team of innovators, artists, developers, and music enthusiasts. We believe in the power of music to connect people, and we're dedicated to creating the best platform to experience it. Here's a glimpse of our team:</p>
+
+            <div class="team">
+                <div class="team-member">
+                  
+ <img src="{{ url_for('static', filename='images/photo3.png') }}" alt="NetInfinite Logo">
+ 
+                    <h3>John Doe</h3>
+                    <p>Founder & CEO</p>
+                </div>
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/member-8.png') }}" alt="NetInfinite Logo">
+ 
+                    <h3>Jane Smith</h3>
+                    <p>Lead Developer</p>
+                </div>
+                <div class="team-member">
+                    <img src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+                    <h3>Mark Johnson</h3>
+                    <p>Music Curator</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Contact Us</h2>
+            <p>If you have any questions, feedback, or need assistance, feel free to reach out to us:</p>
+            <p>Email: <a href="mailto:netinfinte@gmail.com">netinfinte@gmail.com</a></p>
+            <p>Follow us on social media: <a href="https://www.tiktok.com/@netinfinte" target="_blank">TikTok</a></p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 NetInfinte. All rights reserved.</p>
+    </div>
+
+</body>
+</html>

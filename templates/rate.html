@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rate NetInfinte</title>
+    <style>
+        /* Basic styling */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+            color: #505050;
+        }
+
+        header {
+            background-color: #333;
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+        }
+
+        .content {
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .rating-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .stars {
+            font-size: 30px;
+            color: #f5a623;
+        }
+
+        .stars i {
+            cursor: pointer;
+        }
+
+        .stars i:hover {
+            color: #f1c40f;
+        }
+
+        .comment-box {
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .comment-box textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            resize: none;
+        }
+
+        .submit-btn {
+            display: block;
+            background-color: #28a745;
+            color: white;
+            padding: 10px 20px;
+            font-size: 18px;
+            text-align: center;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 20px auto;
+        }
+
+        .submit-btn:hover {
+            background-color: #218838;
+        }
+
+        .footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Rate Your Experience with NetInfinte</h1>
+    </header>
+
+    <div class="content">
+        <div class="rating-container">
+            <h2>Rate us:</h2>
+            <div class="stars">
+                <!-- Star rating system -->
+                <i class="fa fa-star" onclick="rate(1)"></i>
+                <i class="fa fa-star" onclick="rate(2)"></i>
+                <i class="fa fa-star" onclick="rate(3)"></i>
+                <i class="fa fa-star" onclick="rate(4)"></i>
+                <i class="fa fa-star" onclick="rate(5)"></i>
+            </div>
+            <p id="rating-feedback">Click on a star to rate us.</p>
+        </div>
+
+        <div class="comment-section">
+            <h2>Your Comments:</h2>
+            <textarea class="comment-box" placeholder="Write your comments here..."></textarea>
+        </div>
+
+        <button class="submit-btn" onclick="submitFeedback()">Submit Feedback</button>
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 NetInfinte. All rights reserved.</p>
+    </div>
+
+    <script>
+        let userRating = 0;
+
+        // Function to handle rating
+        function rate(stars) {
+            userRating = stars;
+            const starsElements = document.querySelectorAll('.stars i');
+            starsElements.forEach((star, index) => {
+                if (index < stars) {
+                    star.style.color = '#f1c40f'; // Yellow for filled stars
+                } else {
+                    star.style.color = '#f5a623'; // Default star color
+                }
+            });
+            document.getElementById('rating-feedback').textContent = `You rated ${stars} stars.`;
+        }
+
+        // Function to submit the feedback
+        function submitFeedback() {
+            const comment = document.querySelector('.comment-box').value;
+            if (userRating === 0 || comment === '') {
+                alert('Please provide a rating and comment before submitting.');
+                return;
+            }
+
+            // Here you can add code to send the feedback to your server or API
+            alert(`Thank you for your feedback!\nRating: ${userRating} stars\nComment: ${comment}`);
+        }
+    </script>
+</body>
+</html>

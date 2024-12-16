@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0,user-scalable=no">
+   <link rel="stylesheet" href="{{ url_for('static', filename='images/NetInfinte.png') }}">
+
+    <title>NetInfinite Music Player</title>
+    <style>
+    
+    /* General Styles */
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #fafafa; /* White background */
+        color: black; /* Text color black */
+        overflow-x: hidden;
+     
+        padding-top: 70px; /* Adjust padding for header */
+    }
+
+    /* Header with Logo */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background-color: #d3d3d3;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        height: 70px;
+        border-bottom: 1px solid #black;
+    }
+
+    .header img {
+        width: 120px; /* Logo size */
+        max-height: 50px;
+    }
+
+    .menu-icon {
+    position: absolute; /* Ensure it's positioned relative to the page */
+    top: 15px; /* Adjust the vertical distance from the top */
+    left: 20px; /* Adjust the horizontal distance from the left */
+    font-size: 30px; /* Size of the menu icon */
+    cursor: pointer; /* Make it clickable */
+    color: pink; /* Icon color */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+    .menu-icon:hover {
+        color: #666;
+        transform: scale(1.1);
+    }
+
+    /* Menu Drawer */
+    #menu {
+        position: fixed;
+        top: 70px;
+        left: -270px;
+      height:100%;
+      width:250px;
+        background-color: white;
+        padding: 20px 10px;
+        border: 1px solid #ddd;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+      z-index:999;
+      transition:all 0.3s ease;
+    }
+      
+      #menu.show{ /* slide in */
+    left:0;
+      
+      }
+      #menu a i {
+      margin-right:10px;
+      }
+
+    #menu a {
+      display:flex;
+        color: black;
+      align-items:center;
+        text-decoration: none;
+        padding: 10px 0;
+      font-size:16px;
+    }
+
+    #menu a:hover {
+        background-color: #f0f0f0;
+    }
+
+    /* Search Box */
+    .search-box {
+        width: 80%;
+        margin: 120px auto 20px;
+        padding: 10px;
+        background-color: #f0f0f0;
+        color: black;
+        border: none;
+        border-radius: 5px;
+        font-size: 16px;
+        text-align: center;
+    }
+
+    .search-box:focus {
+        outline: none;
+        border: 1px solid #ccc;
+    }
+
+    /* Song List */
+    #song-list {
+        width: 100%;
+        margin: 15px auto;
+        padding: 0;
+        list-style: none;
+        max-height: 100vh;
+    }
+
+    .song-item {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 10px 0;
+        background-color: white;
+        padding: 10px;
+        border-radius: 8px;
+        border: 1px solid #ddd;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        position: relative; /* Allows absolute positioning of the image */
+    }
+
+    /* Add the wave image above the song item */
+    .song-item::before {
+        content: "";
+        position: absolute;
+        top: -10px; /* Adjust the space between the image and song item */
+        left: 50%;
+        transform: translateX(-50%);
+        width: 100px; /* Adjust width of the image */
+        height: 30px; /* Adjust height of the image */
+        background-image: url('{{ url_for("static", filename="images/wave.png") }}'); /* Dynamic image path */
+        background-size: contain;
+        background-repeat: no-repeat;
+   
+       }
+
+    .song-item:hover {
+        transform: scale(1.02);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Song Image */
+    .song-image {
+        width: 50px;
+        height: 50px;
+        margin-right: 10px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 1px solid #ddd;
+    }
+/* Like Button Container */
+#like-container {
+    position: fixed;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column; /* Stack the icon and count vertically */
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
+}
+
+#like-container:hover {
+    background-color: rgba(0, 0, 0, 0.9);
+}
+
+/* Like Icon */
+#like-icon {
+    font-size: 40px;
+    margin-bottom: 5px; /* Space between icon and count */
+}
+
+/* Like Count Text */
+#like-count-container {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+/* Make the like button responsive */
+@media (max-width: 768px) {
+    #like-container {
+        right: 10px;
+        top: 70%;
+        transform: translateY(-50%);
+    }
+}
+}
+ 
+    .song-info {
+    flex-grow: 1; /* Allow the song info to take up available space */
+    font-size: 12px; /* Set the font size */
+    color: black; /* Text color */
+    word-wrap: break-word; /* Force wrapping on long words */
+    overflow-wrap: break-word; /* Break lines on long words */
+    white-space: normal; /* Allow wrapping to the next line */
+ }
+
+    /* Song Actions */
+    .song-actions {
+        display: flex;
+        align-items: center;
+    }
+
+    .play-btn, .download-btn {
+        background-color: #f0f0f0;
+        color: black;
+        border: none;
+        padding: 8px 12px;
+        margin-left: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 12px;
+      text-decoration: none; /* Remove underline */
+}
+    
+
+    .play-btn:hover, .download-btn:hover {
+        background-color: #ddd;
+        transform: scale(1.05);
+    }
+
+ 
+/* Footer */
+footer {
+    background-color: #d3d3d3;
+    color: #f0f0f0;
+    width: 100%;
+    text-align: center;
+    padding: 15px 0;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    transition: transform 0.5s ease; /* Smooth transition for footer disappearing */
+}
+
+/* Footer when it's hidden */
+footer.hidden {
+    transform: translateY(100%); /* Move the footer down to hide it */
+}
+
+/* Footer Logo */
+.footer-logo {
+    max-width: 100px; /* Set maximum width */
+    height: auto; /* Maintain aspect ratio */
+    display: inline-block;
+    margin: 0 auto;
+
+    }
+</style>
+   
+</head>
+<body>
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+
+    <!-- Header with Logo -->
+    <div class="header">
+<img src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+    </div>
+    
+    <!-- Menu Icon -->
+    <div class="menu-icon" onclick="toggleMenu()">☰</div>
+<!-- Like Button -->
+<!-- Like Button with Count Below -->
+<div id="like-container" onclick="likeWebsite()">
+    <i id="like-icon" class="fa fa-thumbs-up"></i>
+    <div id="like-count-container">
+        <span id="like-count">0</span> Likes
+    </div>
+</div>
+  <!-- Menu Drawer -->
+<div id="menu">
+        <a href="{{ url_for('videos_page') }}">
+            <i class="fa fa-video"></i> Top Videos
+        </a>
+        <a href="{{ url_for('latest_page') }}">
+            <i class="fa fa-clock"></i> Latest
+        </a>
+        <a href="{{ url_for('about_page') }}">
+            <i class="fa fa-info-circle"></i> About Us
+        </a>
+        <a href="{{ url_for('contact_page') }}">
+            <i class="fa fa-phone"></i> Contact
+        </a>
+        <a href="{{ url_for('help_page') }}">
+            <i class="fa fa-question-circle"></i> Help
+        </a>
+        <a href="{{ url_for('privacy_policy_page') }}">
+            <i class="fa fa-lock"></i> Privacy Policy
+        </a>
+        <a href="{{ url_for('services_page') }}">
+            <i class="fa fa-cogs"></i> Services
+        </a>
+        <a href="{{ url_for('rate_page') }}">
+            <i class="fa fa-star"></i> Rate
+        </a>
+        <a href="{{ url_for('premium_page') }}">
+            <i class="fa fa-gem"></i> Premium
+        </a>
+    </div>
+  <!-- Search Box -->
+    <input type="text" class="search-box" id="search-box" placeholder="Search for a song or artist..." onkeyup="searchSongs()">
+
+    <!-- Song List -->
+    <ul id="song-list"></ul>
+
+    <!-- Footer with Logo -->
+<footer>
+    <img class="footer-logo" src="{{ url_for('static', filename='images/NetInfinte.png') }}" alt="NetInfinite Logo">
+    <p>&copy; 2024 NetInfinte. All rights reserved.</p>
+</footer>
+
+    <script>
+
+// Fetch the like count when the page loads
+async function getLikeCount() {
+    const response = await fetch('http://127.0.0.1:5000/get_likes');
+    const data = await response.json();
+    document.getElementById('like-count').textContent = formatLikeCount(data.likes);
+}
+
+// Function to handle the like button click
+async function likeWebsite() {
+    const response = await fetch('http://127.0.0.1:5000/like', {
+        method: 'POST',
+    });
+
+    if (response.ok) {
+        const data = await response.json();
+        document.getElementById('like-count').textContent = formatLikeCount(data.likes);
+    } else {
+        alert('Error liking the website');
+    }
+}
+
+// Initialize like count on page load
+window.onload = getLikeCount;
+
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+}
+
+let searchBox = document.getElementById('search-box');
+let songList = document.getElementById('song-list');
+let currentAudio = null; // Store the current audio instance
+
+// Fetch Songs from API and Display them
+async function searchSongs() {
+    const query = searchBox.value.toLowerCase();
+    const response = await fetch('http://127.0.0.1:5000/api/songs');
+    const songs = await response.json();
+
+    songList.innerHTML = '';
+
+    if (songs.error) {
+        songList.innerHTML = `<li>${songs.error}</li>`;
+        return;
+    }
+
+    songs.filter(song => song.name.toLowerCase().includes(query))
+        .forEach(song => {
+            const songItem = document.createElement('li');
+            songItem.className = 'song-item';
+            songItem.innerHTML = `
+                <img class="song-image" src="${song.image || '/images/NetInfinte.png'}" alt="${song.name}">
+                <div class="song-info">${song.name}</div>
+                <div class="song-actions">
+                    <button class="play-btn" onclick="playPauseSong('${song.name}', this)">Play</button>
+                    <a class="download-btn" href="http://127.0.0.1:5000/static/songs/${song.name}" download>Download</a>
+                </div>
+            `;
+            songList.appendChild(songItem);
+        });
+}
+
+// Play/Pause Song Functionality
+function playPauseSong(songName, button) {
+    if (currentAudio && currentAudio.src === `http://127.0.0.1:5000/static/songs/${songName}`) {
+        if (currentAudio.paused) {
+            currentAudio.play();
+            button.textContent = 'Pause';
+            button.classList.add('playing');
+        } else {
+            currentAudio.pause();
+            button.textContent = 'Play';
+            button.classList.remove('playing');
+        }
+    } else {
+        if (currentAudio) {
+            currentAudio.pause();
+            let previousButton = document.querySelector('.song-item button.play-btn.playing');
+            if (previousButton) {
+                previousButton.textContent = 'Play';
+                previousButton.classList.remove('playing');
+            }
+        }
+        currentAudio = new Audio(`http://127.0.0.1:5000/static/songs/${songName}`);
+        currentAudio.play();
+        button.textContent = 'Pause';
+        button.classList.add('playing');
+    }
+}
+
+// Fetch Songs on Initial Load
+searchSongs();
+
+let footer = document.querySelector('footer');
+let isScrolling;
+
+// Detect scroll event
+window.addEventListener('scroll', function() {
+    // Clear the previous timeout to prevent unnecessary checks
+    window.clearTimeout(isScrolling);
+
+    // Add class to hide footer when scrolling
+    footer.classList.add('hidden');
+
+    // Set a timeout to check if the user has stopped scrolling
+    isScrolling = setTimeout(function() {
+        // Remove class to show footer again when scrolling stops
+        footer.classList.remove('hidden');
+    }, 100); // 100ms delay before showing the footer again
+});
+
+// Function to format the like count
+function formatLikeCount(count) {
+    if (count >= 1000000) {
+        return (count / 1000000).toFixed(1) + 'M'; // Format as millions
+    } else if (count >= 1000) {
+        return (count / 1000).toFixed(1) + 'k'; // Format as thousands
+    } else {
+        return count; // Return the count for values under 1000
+    }
+}
+
+
+    </script>
+
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>
