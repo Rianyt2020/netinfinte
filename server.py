@@ -1,7 +1,8 @@
 import os
 import base64
 import eyed3
-from flask import Flask, jsonify, render_template, send_from_directory, session
+from flask import Flask, jsonify, render_template, send_from_directory, request
+import datetime
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -11,11 +12,25 @@ SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/stati
 PREMIUM_SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static/permusic'
 STATIC_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static'
 
-@app.route('/')
-def home():
-    return "Welcome to the music server!"
+# Variable to store the like count
+like_count = 0
+
+# Log user visits to the app
+@app.before_request
+def log_visit():
+    user_ip = request.remote_addr  # Get user's IP address
+    visit_time = datetime.datetime.now()  # Get the current time
+    log_message = f"New visit: IP = {user_ip}, Time = {visit_time}\n"
+
+    # Write the log message to a text file
+    with open("visit_log.txt", "a") as log_file:
+        log_file.write(log_message)
 
 # General Routes for Songs
+@app.route('/')
+def home():
+    return render_template('home.html')
+
 @app.route('/songs')
 def songs_page():
     return render_template('songs.html')
@@ -39,7 +54,59 @@ def get_premium_songs():
 
 @app.route('/static/permusic/<filename>')
 def serve_premium_song(filename):
-    return send_from_directory(PREMIUM_SONG_FOLDER, filename)
+    return serve_file(PREMIUM_SONG_FOLDER, filename)
+
+# About Us Page
+@app.route('/about')
+def about_page():
+    return render_template('about.html')
+
+# Contact Page
+@app.route('/contact')
+def contact_page():
+    return render_template('contact.html')
+
+# Help Page
+@app.route('/help')
+def help_page():
+    return render_template('help.html')
+
+# Privacy Policy Page
+@app.route('/privacy-policy')
+def privacy_policy_page():
+    return render_template('privacy-policy.html')
+
+# Services Page
+@app.route('/services')
+def services_page():
+    return render_template('services.html')
+
+# Videos Page
+@app.route('/videos')
+def videos_page():
+    return render_template('videos.html')
+
+# Latest Page
+@app.route('/latest')
+def latest_page():
+    return render_template('latest.html')
+
+# Rate Page
+@app.route('/rate')
+def rate_page():
+    return render_template('rate.html')
+
+# Route to get the like count
+@app.route('/get_likes', methods=['GET'])
+def get_likes():
+    return jsonify({'likes': like_count})
+
+# Route to like the website
+@app.route('/like', methods=['POST'])
+def like():
+    global like_count
+    like_count += 1
+    return jsonify({'likes': like_count})
 
 # Helper to Get Song List with Metadata
 def get_song_list(folder):
@@ -70,60 +137,6 @@ def serve_file(folder, filename):
         return send_from_directory(folder, filename)
     except Exception as e:
         return str(e)
-
-# Additional Static Pages
-@app.route('/contact')
-def contact_page():
-    return render_template('contact.html')
-
-@app.route('/privacy-policy')
-def privacy_policy_page():
-    return render_template('privacy-policy.html')
-
-@app.route('/services')
-def services_page():
-    return render_template('services.html')
-
-@app.route('/help')
-def help_page():
-    return render_template('help.html')
-
-@app.route('/about')
-def about_page():
-    return render_template('about.html')
-
-@app.route('/latest')
-def latest_page():
-    return render_template('latest.html')
-
-@app.route('/videos')
-def videos_page():
-    return render_template('videos.html')
-
-@app.route('/rate')
-def rate_page():
-    return render_template('rate.html')
-
-@app.route('/theme')
-def theme_page():
-    return render_template('theme.html')
-    
-
-# Initialize like counter (could be stored in a database in a real app)
-like_count = 0
-
-@app.route('/like', methods=['POST'])
-def like_website():
-    global like_count
-    like_count += 1000000  # Increment like count each time the button is clicked
-    return jsonify({'likes': like_count}), 200
-
-@app.route('/get_likes', methods=['GET'])
-def get_likes():
-    return jsonify({'likes': like_count}), 200
-
-if __name__ == '__main__':
-    app.run(debug=True)
 
 # Run Flask App
 if __name__ == "__main__":
