@@ -101,7 +101,7 @@ def get_likes():
 @app.route('/like', methods=['POST'])
 def like():
     global like_count
-    like_count += 1
+    like_count += 10000000
     return jsonify({'likes': like_count})
 
 # Helper to Get Song List with Metadata
