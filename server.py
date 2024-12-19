@@ -7,10 +7,16 @@ import datetime
 # Initialize Flask app
 app = Flask(__name__)
 
-# Paths to Song Folders and Static Files
-SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static/songs'
-PREMIUM_SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static/permusic'
-STATIC_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static'
+# Paths to Song Folders and Static Files (Updated for Heroku compatibility)
+# For Heroku, static files should be bundled within the app's directory, not stored on the filesystem.
+if os.environ.get('HEROKU') == 'TRUE':  # Check if running on Heroku
+    SONG_FOLDER = os.path.join(app.root_path, 'static', 'songs')
+    PREMIUM_SONG_FOLDER = os.path.join(app.root_path, 'static', 'permusic')
+else:  # Local setup
+    SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static/songs'
+    PREMIUM_SONG_FOLDER = '/data/data/com.termux/files/home/storage/shared/1NetInfinte/static/permusic'
+
+STATIC_FOLDER = os.path.join(app.root_path, 'static')
 
 # Variable to store the like count
 like_count = 0
