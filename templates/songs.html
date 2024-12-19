@@ -332,16 +332,16 @@ footer.hidden {
 
     <script>
 
-// Fetch the like count when the page loads
+// Function to fetch the like count
 async function getLikeCount() {
-    const response = await fetch('http://127.0.0.1:5000/get_likes');
+    const response = await fetch('/get_likes');  // Use a relative URL
     const data = await response.json();
     document.getElementById('like-count').textContent = formatLikeCount(data.likes);
 }
 
 // Function to handle the like button click
 async function likeWebsite() {
-    const response = await fetch('http://127.0.0.1:5000/like', {
+    const response = await fetch('/like', {  // Use a relative URL
         method: 'POST',
     });
 
@@ -353,22 +353,10 @@ async function likeWebsite() {
     }
 }
 
-// Initialize like count on page load
-window.onload = getLikeCount;
-
-function toggleMenu() {
-    const menu = document.getElementById('menu');
-    menu.classList.toggle('show');
-}
-
-let searchBox = document.getElementById('search-box');
-let songList = document.getElementById('song-list');
-let currentAudio = null; // Store the current audio instance
-
-// Fetch Songs from API and Display them
+// Function to search songs
 async function searchSongs() {
     const query = searchBox.value.toLowerCase();
-    const response = await fetch('http://127.0.0.1:5000/api/songs');
+    const response = await fetch('/api/songs');  // Use a relative URL
     const songs = await response.json();
 
     songList.innerHTML = '';
@@ -383,11 +371,11 @@ async function searchSongs() {
             const songItem = document.createElement('li');
             songItem.className = 'song-item';
             songItem.innerHTML = `
-                <img class="song-image" src="${song.image || '/images/NetInfinte.png'}" alt="${song.name}">
+                <img class="song-image" src="${song.image || '/static/images/NetInfinte.png'}" alt="${song.name}">
                 <div class="song-info">${song.name}</div>
                 <div class="song-actions">
                     <button class="play-btn" onclick="playPauseSong('${song.name}', this)">Play</button>
-                    <a class="download-btn" href="http://127.0.0.1:5000/static/songs/${song.name}" download>Download</a>
+                    <a class="download-btn" href="/static/songs/${song.name}" download>Download</a>
                 </div>
             `;
             songList.appendChild(songItem);
