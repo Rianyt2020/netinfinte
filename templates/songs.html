@@ -332,16 +332,20 @@ footer.hidden {
 
     <script>
 
-// Function to fetch the like count
+// // Fetch the like count when the page loads
 async function getLikeCount() {
-    const response = await fetch('/get_likes');  // Use a relative URL
-    const data = await response.json();
-    document.getElementById('like-count').textContent = formatLikeCount(data.likes);
+    const response = await fetch('/get_likes'); // Updated URL for Heroku
+    if (response.ok) {
+        const data = await response.json();
+        document.getElementById('like-count').textContent = formatLikeCount(data.likes);
+    } else {
+        console.error('Failed to fetch like count');
+    }
 }
 
 // Function to handle the like button click
 async function likeWebsite() {
-    const response = await fetch('/like', {  // Use a relative URL
+    const response = await fetch('/like', { // Updated URL for Heroku
         method: 'POST',
     });
 
@@ -353,10 +357,23 @@ async function likeWebsite() {
     }
 }
 
-// Function to search songs
+// Initialize like count on page load
+window.onload = getLikeCount;
+
+// Toggle menu drawer
+function toggleMenu() {
+    const menu = document.getElementById('menu');
+    menu.classList.toggle('show');
+}
+
+// Handle song search
+let searchBox = document.getElementById('search-box');
+let songList = document.getElementById('song-list');
+let currentAudio = null; // Store the current audio instance
+
 async function searchSongs() {
     const query = searchBox.value.toLowerCase();
-    const response = await fetch('/api/songs');  // Use a relative URL
+    const response = await fetch('/api/songs'); // Updated URL for Heroku
     const songs = await response.json();
 
     songList.innerHTML = '';
@@ -371,7 +388,7 @@ async function searchSongs() {
             const songItem = document.createElement('li');
             songItem.className = 'song-item';
             songItem.innerHTML = `
-                <img class="song-image" src="${song.image || '/static/images/NetInfinte.png'}" alt="${song.name}">
+                <img class="song-image" src="${song.image || '/static/images/default.png'}" alt="${song.name}">
                 <div class="song-info">${song.name}</div>
                 <div class="song-actions">
                     <button class="play-btn" onclick="playPauseSong('${song.name}', this)">Play</button>
@@ -382,67 +399,58 @@ async function searchSongs() {
         });
 }
 
-// Play/Pause Song Functionality
+// Play or pause the song
 function playPauseSong(songName, button) {
-    if (currentAudio && currentAudio.src === `http://127.0.0.1:5000/static/songs/${songName}`) {
+    if (currentAudio && currentAudio.src.includes(songName)) {
         if (currentAudio.paused) {
             currentAudio.play();
             button.textContent = 'Pause';
-            button.classList.add('playing');
         } else {
             currentAudio.pause();
             button.textContent = 'Play';
-            button.classList.remove('playing');
         }
     } else {
         if (currentAudio) {
             currentAudio.pause();
-            let previousButton = document.querySelector('.song-item button.play-btn.playing');
+            const previousButton = document.querySelector('.play-btn.playing');
             if (previousButton) {
                 previousButton.textContent = 'Play';
                 previousButton.classList.remove('playing');
             }
         }
-        currentAudio = new Audio(`http://127.0.0.1:5000/static/songs/${songName}`);
+        currentAudio = new Audio(`/static/songs/${songName}`);
         currentAudio.play();
         button.textContent = 'Pause';
         button.classList.add('playing');
     }
 }
 
-// Fetch Songs on Initial Load
-searchSongs();
-
+// Detect user scrolling for footer hide/show functionality
 let footer = document.querySelector('footer');
 let isScrolling;
 
-// Detect scroll event
-window.addEventListener('scroll', function() {
-    // Clear the previous timeout to prevent unnecessary checks
-    window.clearTimeout(isScrolling);
-
-    // Add class to hide footer when scrolling
+window.addEventListener('scroll', () => {
+    clearTimeout(isScrolling);
     footer.classList.add('hidden');
 
-    // Set a timeout to check if the user has stopped scrolling
-    isScrolling = setTimeout(function() {
-        // Remove class to show footer again when scrolling stops
+    isScrolling = setTimeout(() => {
         footer.classList.remove('hidden');
-    }, 100); // 100ms delay before showing the footer again
+    }, 100);
 });
 
-// Function to format the like count
+// Format like count
 function formatLikeCount(count) {
-    if (count >= 1000000) {
-        return (count / 1000000).toFixed(1) + 'M'; // Format as millions
-    } else if (count >= 1000) {
-        return (count / 1000).toFixed(1) + 'k'; // Format as thousands
+    if (count >= 1_000_000) {
+        return (count / 1_000_000).toFixed(1) + 'M';
+    } else if (count >= 1_000) {
+        return (count / 1_000).toFixed(1) + 'k';
     } else {
-        return count; // Return the count for values under 1000
+        return count.toString();
     }
 }
 
-
+// Load songs initially
+searchSongs();
     </script>
 
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
