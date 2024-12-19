@@ -27,10 +27,6 @@ def log_visit():
         log_file.write(log_message)
 
 # General Routes for Songs
-@app.route('/')
-def home():
-    return "<h1>Welcome to NetInfinite!</h1>"
-
 @app.route('/songs')
 def songs_page():
     return render_template('songs.html')
