@@ -27,8 +27,8 @@ def log_visit():
         log_file.write(log_message)
 
 # General Routes for Songs
-@app.route('/songs')
-def songs_page():
+@app.route('/')
+def home_page():
     return render_template('songs.html')
 
 @app.route('/api/songs')
